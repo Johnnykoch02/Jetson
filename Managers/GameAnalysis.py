@@ -8,7 +8,7 @@ class Analyzer:
     def FindBest( self, game_data ) -> Decision:
         pass
     def TrackCompletion( self, game_objects, task ) -> Correction:
-        return False
+        return Correction()
     def WaitForCompletion( self ):
         pass
 

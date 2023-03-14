@@ -1,11 +1,11 @@
-from GameDecision import *
+from Classes.GameDecision import *
 
 class Correction:
-    def __init__(self) -> None:
+    def __init__( self ) -> None:
         pass
-    def NeedsCorrection() -> bool:
+    def NeedsCorrection( self ) -> bool:
         return False
-    def GetCorrection() -> Decision:
+    def GetCorrection( self ) -> Decision:
         pass
-    def GetSteps():
+    def GetSteps( self ):
         pass

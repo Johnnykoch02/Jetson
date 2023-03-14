@@ -10,10 +10,10 @@ import sys
 #byte = comms.RegisterCallback("my_tag", callback)
 #comms.Start()
 
-def Main( args ) -> 0:
+def Main( ) -> 0:
     # Load serial Communications
-    comms = Communications()
-    comms.Start()
+    # comms = Communications()
+    # comms.Start()
 
     # Init Game Object manager
     objects = ObjectManager()
@@ -28,12 +28,15 @@ def Main( args ) -> 0:
     tasks = TaskManager()
 
     # Init Vision manager with reporting to Game Analysis
-    cam = Vision()
+    camera = Vision()
     
     # Beat the game
     while True:
-        for object in cam.CollectObjects():
+        for object in camera.CollectObjects():
             objects.TraceObject(object)
+
+        buf = objects.SerializeForComs()
+        # comms.SendRawBuffer(buf)
 
         analyzer.WaitForCompletion()
 
@@ -48,7 +51,6 @@ def Main( args ) -> 0:
             if task.NeedsCorrection():
                 tasks.Interupt()
                 tasks.QueueTask(task.GetSteps())
-
 
     return 0
 

@@ -100,6 +100,9 @@ class Communications:
             if item is None and first_none == 0:
                 first_none = i
         return first_none
+    
+    def SendRawBuffer(bytes):
+        pass
 
     def RecieveTagList( self, array ):
         print(array)

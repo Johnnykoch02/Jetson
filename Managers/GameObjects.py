@@ -10,3 +10,5 @@ class ObjectManager:
         pass
     def GetCurrentTarget( self ) -> GameObject:
         pass
+    def SerializeForComs( self ) -> bytearray:
+        pass
