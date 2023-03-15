@@ -10,6 +10,7 @@ class Analyzer:
         self.__hasher = Hasher()
         pass
     # Finds the best decision
+    # Add roller blocking
     def FindBest( self, game_data: ObjectManager ) -> Decision:
         hash_list = []
         
@@ -22,6 +23,7 @@ class Analyzer:
                 "score": self.__hasher.HashGameObject(frisbee, delta_time, bots),
                 "object": frisbee
             }
+            print(hash)
             hash_list.append(hash)
 
         pass

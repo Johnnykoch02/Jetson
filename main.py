@@ -40,8 +40,12 @@ def Main( ) -> 0:
 
         # analyzer.WaitForCompletion()
 
+        # Task -> Actions -> Steps -> Directions
+        # Reactive Program -> Reacts and responds its changing environment
+
         if tasks.AlmostFinished():
             decision = analyzer.FindBest(objects)
+
             # if objects.GetCurrentTarget() != decision.GetTarget():
             #     objects.SetCurrentTarget(decision.GetTarget())
             #     steps = builder.BuildSteps(decision)

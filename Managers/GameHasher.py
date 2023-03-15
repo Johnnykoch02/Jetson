@@ -30,11 +30,11 @@ hash_weights = {
         "distance_weights": {
             # Other robot under 10 cm
             10: 5,
-            # Under 30cm
+            # Under 30 cm
             30: 25,
-            # Under 50cm
+            # Under 50 cm
             50: 70,
-            # Under 5m
+            # Under 5 m
             500: 100
         },
         "score_weights": {
@@ -76,8 +76,8 @@ class Hasher:
         return time_weight
     def HashFrisbee( self, object, deltatime, extra) -> float:
         time_weight = self.GetTimeHash(deltatime)
-                
-        return 0
+        #print(time_weight)
+        return time_weight
     def HashGameObject( self, object: GameObject, deltatime: float, extra: list[GameObject] ) -> float:
         if object.type == ObjectType.FRISBEE:
             return self.HashFrisbee( object, deltatime, extra )
