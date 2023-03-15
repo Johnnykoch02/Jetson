@@ -35,17 +35,17 @@ def Main( ) -> 0:
         for object in camera.CollectObjects():
             objects.TraceObject(object)
 
-        buf = objects.SerializeForComs()
+        # buf = objects.SerializeForComs()
         # comms.SendRawBuffer(buf)
 
-        analyzer.WaitForCompletion()
+        # analyzer.WaitForCompletion()
 
         if tasks.AlmostFinished():
             decision = analyzer.FindBest(objects)
-            if objects.GetCurrentTarget() != decision.GetTarget():
-                objects.SetCurrentTarget(decision.GetTarget())
-                steps = builder.BuildSteps(decision)
-                tasks.QueueTask(steps)
+            # if objects.GetCurrentTarget() != decision.GetTarget():
+            #     objects.SetCurrentTarget(decision.GetTarget())
+            #     steps = builder.BuildSteps(decision)
+            #     tasks.QueueTask(steps)
         else:
             task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
             if task.NeedsCorrection():
