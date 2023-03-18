@@ -1,7 +1,7 @@
 import cv2
 import os
 
-def CameraCapture(path_a, path_b):
+def CameraCapture(path_a:str, path_b:str):
     path_A = os.path.join(os.getcwd(), path_a)
     path_B = os.path.join(os.getcwd(), path_b)
     
