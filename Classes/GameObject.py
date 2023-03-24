@@ -10,9 +10,10 @@ class ObjectType(Enum):
     FRIENDLY_ROBOT = 5
 
 class GameObject:
-    id = 0
-    type = ObjectType.FRISBEE
-    position = Vec(0,0,0)
     def __init__(self) -> None:
-        pass
+        self.id = 0
+        self.score = 0
+        self.type = ObjectType.FRISBEE
+        self.position = Vec(0,0,0)
+        self.velocity = Vec(0,0,0)
     

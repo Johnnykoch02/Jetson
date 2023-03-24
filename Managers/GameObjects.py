@@ -1,5 +1,4 @@
 from Classes.GameObject import *
-from typing import Dict
 
 class ObjectManager:
     def __init__(self) -> None:
@@ -8,28 +7,38 @@ class ObjectManager:
         self.enemies = dict()
         self.friendly = dict()
         self.goals = dict()
-        pass
+
+    def __Trace( self, table: dict, obj: GameObject):
+        if obj.id in table.keys():
+            table.update({obj.id: obj})
+        else:
+            table[obj.id] = obj
+
     # Traces deteced objects to existing game objects
     def TraceObject( self, object: GameObject ) -> None:
         if object.type == ObjectType.FRISBEE:
-            if object.id in self.frisbees.keys():
-                self.frisbees.update({object.id: object})
-            else:
-                self.frisbees[object.id] = object               
-        pass
+            self.__Trace(self.frisbees, object)
+        if object.type == ObjectType.ENEMY_ROBOT:
+            self.__Trace(self.enemies, object)
+        if object.type == ObjectType.FRIENDLY_ROBOT:
+            self.__Trace(self.friendly, object)
+        
+
     def SetCurrentTarget( self, object ):
         pass
     def GetCurrentTarget( self ) -> GameObject:
         pass
     def SerializeForComs( self ) -> bytearray:
         pass
-    def GetEnemies( self ) -> Dict[int, GameObject]:
+    def GetEnemies( self ) -> dict[int, GameObject]:
         pass
-    def GetFriendly( self ) -> Dict[int, GameObject]:
+    def GetFriendly( self ) -> dict[int, GameObject]:
         pass
-    def GetFrisbees( self ) -> Dict[int, GameObject]:
+    def GetFrisbees( self ) -> dict[int, GameObject]:
         return self.frisbees
-    def GetGoals( self ) -> Dict[int, GameObject]:
+    def GetGoals( self ) -> dict[int, GameObject]:
         pass
-    def GetBots( self ) -> Dict[int, GameObject]:
-        pass
+    def GetBots( self ) -> list[GameObject]:
+        return (self.enemies | self.friendly).values()
+    def GetAll( self ) -> list[GameObject]:
+        return (self.enemies | self.friendly | self.frisbees).values()

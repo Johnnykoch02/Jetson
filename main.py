@@ -4,36 +4,35 @@ from Managers.GameAnalysis import *
 from Managers.VisionManager import *
 from Managers.GameSteps import *
 from Managers.GameTasks import *
+import pyqtgraph as pg
+from PyQt5 import QtWidgets, QtCore
+import cProfile
+import pstats
 import sys
+import threading
 
-#comms = Communications()
-#byte = comms.RegisterCallback("my_tag", callback)
-#comms.Start()
+DEBUG_VISUALIZE = True
+from Testing.Visualize import *
 
-def Main( ) -> 0:
-    # Load serial Communications
-    # comms = Communications()
-    # comms.Start()
+def visualization():
+    global objects
+    visualize_game_objects(objects.GetAll())
 
-    # Init Game Object manager
-    objects = ObjectManager()
-
-    # Init Game Analysis manager
-    analyzer = Analyzer()
-
-    # Init Game Step Builder
-    builder = StepBuilder()
-
-    # Init Task manager
-    tasks = TaskManager()
-
-    # Init Vision manager with reporting to Game Analysis
-    camera = Vision()
-    
+def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
+    t = time.time()
     # Beat the game
     while True:
+
         for object in camera.CollectObjects():
             objects.TraceObject(object)
+
+        nt = time.time()
+        dt = nt - t
+
+        if DEBUG_VISUALIZE:
+
+            for bot in objects.GetBots():
+                update_robot_position_and_velocity(bot, dt)
 
         # buf = objects.SerializeForComs()
         # comms.SendRawBuffer(buf)
@@ -51,10 +50,53 @@ def Main( ) -> 0:
             #     steps = builder.BuildSteps(decision)
             #     tasks.QueueTask(steps)
         else:
-            task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
-            if task.NeedsCorrection():
-                tasks.Interupt()
-                tasks.QueueTask(task.GetSteps())
+            pass
+            # task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
+            # if task.NeedsCorrection():
+            #     tasks.Interupt()
+            #     tasks.QueueTask(task.GetSteps())
+        t = nt
+
+        #pr.disable()
+        #ps = pstats.Stats(pr).sort_stats('cumtime')
+        #ps.print_stats()
+        #break
+
+
+def Main() -> 0:
+    global objects
+    # Load serial Communications
+    # comms = Communications()
+    # comms.Start()
+
+    # Init Game Object manager
+    objects = ObjectManager()
+
+    # Init Game Analysis manager
+    analyzer = Analyzer()
+
+    # Init Game Step Builder
+    builder = StepBuilder()
+
+    # Init Task manager
+    tasks = TaskManager()
+
+    # Init Vision manager with reporting to Game Analysis
+    # True for fake data
+    camera = Vision(DEBUG_VISUALIZE)
+
+    non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
+
+    # Start the non-GUI task in a separate thread
+    non_gui_thread.start()
+
+    if DEBUG_VISUALIZE:
+        app = QtWidgets.QApplication([])
+        visualize_game_objects(None)
+        timer = QtCore.QTimer()
+        timer.timeout.connect(visualization)
+        timer.start(50)
+        app.exec_()
 
     return 0
 
