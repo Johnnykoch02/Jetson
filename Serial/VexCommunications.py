@@ -2,6 +2,7 @@ import time
 import serial
 import json
 import asyncio
+import struct
 import serial.tools.list_ports
 from datetime import datetime
 
@@ -69,19 +70,21 @@ class CallbackItem:
         self.callback = callback
 
 class Communications:
-    __callbacks = list[CallbackItem]
-    __extendedTags = list[CallbackItem]
+    __callbacks = list[CallbackItem]()
+    __extendedTags = list[CallbackItem]()
     __packetIndexOffset = 15
     __stop_token = False
     __next_packet = [ 1 ]
     __packet_header = [ 115, 111, 117, 116 ]
     __end_of_transmission = [ 11, 11, 10, 0 ]
+    __recieved_tags = False
     header_length = len(__packet_header) + 1
     footer_length = len(__end_of_transmission)
     
     def __init__( self ):
-        self.__callbacks = list[CallbackItem] * 256
-        self.__extendedTags = list[CallbackItem] * 256
+        self.__recieved_tags = False
+        self.__callbacks = list[CallbackItem]() * 256
+        self.__extendedTags = list[CallbackItem]() * 256
         self.__FindPort()
         self.last_date = datetime.now()
 
@@ -104,6 +107,62 @@ class Communications:
                 return i
         return -1
     
+    def __SerializeString(self, s: str) -> str:
+        stream = chr(2)
+        string_length = struct.pack('>H', len(s) + 10)
+        stream += chr(string_length[0]) + chr(string_length[1])
+        stream += s
+        return stream
+
+    def __SerializeNumber(self, f: float) -> str:
+        stream = ""
+        ff = ""
+
+        if f == int(f):
+            ff = str(int(f))
+        else:
+            ff = str(f)
+
+        for c in range(len(ff)):
+            chr_ = ord(ff[c])
+
+            if 48 <= chr_ <= 57:
+                if c + 1 < len(ff) and 48 <= ord(ff[c+1]) <= 57:
+                    nchar = ((chr_ - 48) * 10) + (ord(ff[c+1]) - 37)
+                    stream += chr(nchar)
+                    c += 1
+                else:
+                    stream += chr(chr_ - 37)
+            elif chr_ == 46:
+                stream += chr(7)
+
+        ret = chr(len(stream) + 10) + stream
+        ret = chr(1) + ret
+        return ret
+
+    def SendPacket( self, name: str, *args) -> bool:
+        index = self.GetFunctionIndex(name)
+        return self.SendPacket(index, args)
+
+    def SendPacket( self, index: int, *args) -> bool:
+        buffer = ""
+        
+        if index == None: return False
+        buffer += chr(index)
+        
+        for arg in args:
+            argType = str(type(arg))
+            if argType == "String":
+                buffer += self.__SerializeString(arg)
+            if argType == "Float":
+                buffer += self.__SerializeNumber(arg)
+        
+        for num in self.__end_of_transmission:
+            buffer += chr(num)
+        
+        buffer = chr(len(buffer)) + buffer
+        True
+
     def GetFunctionIndex( self, name: str) -> int:
         ind = self.__FindCallbackItem(name)
         if ind >= 0:
@@ -114,6 +173,19 @@ class Communications:
     def SendRawBuffer(bytes):
         pass
 
+    def WaitForTags(self):
+        while(self.__recieved_tags == False):
+            pass
+
+    def __SendTags( self ):
+        for i in range(len(self.__callbacks)):
+            item = self.__callbacks[i]
+            step = 0
+            if (self.__callbacks[i+1] is None):
+                step = 1
+            self.SendPacket(0, 0, step, item.friendly_name)
+            if step == 1: return
+
     def RecieveTagList( self, array: list ):
         step = array[0]
         tag_id = array[1]
@@ -123,8 +195,10 @@ class Communications:
         if (step == 0):
             self.__callbacks = self.__extendedTags.extend(self.__callbacks)
             self.__extendedTags = list[CallbackItem] * 256
-        elif (step == 1):
-            pass
+            self.__recieved_tags = True
+            self.__SendTags()
+        else:
+            self.__recieved_tags = False
 
     def RegisterCallback( self, name: str, method: function ):
         index = self.__FindCallbackItem(name)

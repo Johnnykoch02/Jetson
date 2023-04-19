@@ -66,24 +66,25 @@ def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
 def Main() -> 0:
     global objects
     # Load serial Communications
-    # comms = Communications()
-    # comms.Start()
+    comms = Communications()
+    comms.Start()
+    comms.WaitForTags()
 
     # Init Game Object manager
-    objects = ObjectManager()
+    # objects = ObjectManager()
 
     # Init Game Analysis manager
-    analyzer = Analyzer()
+    # analyzer = Analyzer()
 
     # Init Game Step Builder
-    builder = StepBuilder()
+    # builder = StepBuilder()
 
     # Init Task manager
-    tasks = TaskManager()
+    # tasks = TaskManager()
 
     # Init Vision manager with reporting to Game Analysis
     # True for fake data
-    camera = Vision(DEBUG_VISUALIZE)
+    # camera = Vision(DEBUG_VISUALIZE)
 
     # non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
 
@@ -98,7 +99,7 @@ def Main() -> 0:
     #     timer.start(50)
     #     app.exec_()
 
-    GameLogic(camera, tasks, analyzer)
+    # GameLogic(camera, tasks, analyzer)
 
     return 0
 
