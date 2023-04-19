@@ -4,10 +4,11 @@ from Classes.Vector import *
 
 class ObjectType(Enum):
     FRISBEE = 1
-    HIGH_GOAL = 2
-    LOW_GOAL = 3
-    ENEMY_ROBOT = 4
-    FRIENDLY_ROBOT = 5
+    ROLLER = 2
+    HIGH_GOAL = 3
+    LOW_GOAL = 4
+    ENEMY_ROBOT = 5
+    FRIENDLY_ROBOT = 6
 
 class GameObject:
     def __init__(self) -> None:

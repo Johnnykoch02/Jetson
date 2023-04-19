@@ -85,18 +85,20 @@ def Main() -> 0:
     # True for fake data
     camera = Vision(DEBUG_VISUALIZE)
 
-    non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
+    # non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
 
-    # Start the non-GUI task in a separate thread
-    non_gui_thread.start()
+    # # Start the non-GUI task in a separate thread
+    # non_gui_thread.start()
 
-    if DEBUG_VISUALIZE:
-        app = QtWidgets.QApplication([])
-        visualize_game_objects(None)
-        timer = QtCore.QTimer()
-        timer.timeout.connect(visualization)
-        timer.start(50)
-        app.exec_()
+    # if DEBUG_VISUALIZE:
+    #     app = QtWidgets.QApplication([])
+    #     visualize_game_objects(None)
+    #     timer = QtCore.QTimer()
+    #     timer.timeout.connect(visualization)
+    #     timer.start(50)
+    #     app.exec_()
+
+    GameLogic(camera, tasks, analyzer)
 
     return 0
 

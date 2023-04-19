@@ -18,6 +18,22 @@ hash_weights = {
             # End game
             105000: 0
         }
+    },
+    ObjectType.ROLLER: {
+        "time_weights": {
+            # Auton
+            0: 0,
+            15000 - 3000: 0,
+            15000 - 3000 + 1: -1,
+            # Start of match
+            15001: 0,
+            # Last 3 seconds
+            105000 - 3000: 0,
+            105000 - 3000 + 1: -1,
+            # End game
+            105000 - 1: -1,
+            105000: 0
+        }
     }
 }
 
@@ -40,26 +56,26 @@ class Hasher:
                 last = value
         return final
     
-    def GetTimeHash( self, deltatime ) -> float:
-        return self.GetGenericHash(ObjectType.FRISBEE, "time_weights", deltatime ) / 100
+    def GetTimeHash( self, weight_type: ObjectType, deltatime: float ) -> float:
+        return self.GetGenericHash(weight_type, "time_weights", deltatime ) / 100
     
-    def GetDistanceHash( self, frisbee: GameObject, robots: list[GameObject]):
+    def GetDistanceHash( self, gameObject: GameObject, robots: list[GameObject], radius: float = 100):
         score = 1
 
         for robot in robots:
-            distance_to_frisbee = (frisbee.position - robot.position).norm()
-            our_distance_to_frisbee = frisbee.position.norm()
+            distance_to_frisbee = (gameObject.position - robot.position).norm()
+            our_distance_to_frisbee = gameObject.position.norm()
 
-            direction_to_frisbee = Vec.normalize(frisbee.position - robot.position)
+            direction_to_frisbee = Vec.normalize(gameObject.position - robot.position)
             robot_direction = Vec.normalize(robot.velocity)
 
             angle_between_robot_and_frisbee = direction_to_frisbee.angle_between(robot_direction)
 
-            if angle_between_robot_and_frisbee <= 30 or distance_to_frisbee <= 100:  # Check if the angle is within the desired range
+            if angle_between_robot_and_frisbee <= 30 or distance_to_frisbee <= radius:
                 time_for_robot_to_reach_frisbee = distance_to_frisbee / robot.velocity.norm()
                 time_for_us_to_reach_frisbee = our_distance_to_frisbee / ROBOT_SPEED
 
-                if time_for_us_to_reach_frisbee > time_for_robot_to_reach_frisbee or distance_to_frisbee <= 100:
+                if time_for_us_to_reach_frisbee > time_for_robot_to_reach_frisbee or distance_to_frisbee <= radius:
                     if distance_to_frisbee > 300:
                         drop_factor = 1
                     elif distance_to_frisbee <= 50:
@@ -121,16 +137,32 @@ class Hasher:
                 frisbee_cluster_score += 1
 
         frisbee_cluster_score = min(frisbee_cluster_score, 5) / 5
-        time_weight = self.GetTimeHash(deltatime)
+        time_weight = self.GetTimeHash(ObjectType.FRISBEE, deltatime)
 
         if local_distance > 0.25:
             local_distance = max(local_distance, abs(local_distance - frisbee_cluster_score) / 2)
 
         return distance_score * time_weight * local_distance
     
+    def HashRoller(self, gameObject: GameObject, deltaTime: float, extra: list[GameObject]) -> float:       
+        # Get the time weight for the roller
+        time_weight = self.GetTimeHash(ObjectType.ROLLER, deltaTime)
+        
+        # Check if the time weight is -1 (in the last few seconds of the game)
+        if time_weight == -1:
+            time_weight = 1  # Assign a large value to prioritize rollers in the last few seconds
+        
+        # Get the distance hash for the roller based on enemy robot positions, velocities, and radius/range
+        distance_hash = self.GetDistanceHash(gameObject, extra["bots"], radius=200)
+        
+        roller_score = time_weight * distance_hash
+        return roller_score
+
     def HashGameObject( self, object: GameObject, deltatime: float, extra: list[GameObject] ) -> float:
         if object.type == ObjectType.FRISBEE:
             return self.HashFrisbee( object, deltatime, extra )
+        if object.type == ObjectType.ROLLER:
+            return self.HashRoller( object, deltatime, extra )
         
     def rotate_velocity(self, rotation_speed, delta_time):
         # Calculate the rotation angle based on rotation speed and delta time (in degrees)
