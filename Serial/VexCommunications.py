@@ -3,6 +3,8 @@ import serial
 import json
 import asyncio
 import serial.tools.list_ports
+from typing import Tuple
+import struct
 from datetime import datetime
 
 # [plen]sout[data][NL][0]
@@ -49,6 +51,7 @@ class StringDeserializer:
         print(string)
         return Deserializer(0,0)
 
+
 class Deserializer:
 
     def __init__( self, value, next ):
@@ -68,8 +71,30 @@ class CallbackItem:
         self.friendly_name = name
         self.callback = callback
 
+'''
+Callback Logic:
+    - Brain is responsible for tracking G.F.O.R. position
+    - Jetson is responsible for tracking objects relative to the R.F.O.R.
+    - Callbacks are registered w/ the idea that Jetson can send the getter callback as a request to the brain;
+    - Brain recieves the get request and sends the set response back to Jetson; this works from brain to Jetson as well;
+'''
+def get_registered_callbacks(manager):
+    return [
+        # Object Related Callbacks
+        CallbackItem("set_disk_obj", manager.set_disk_obj_callback), # [Jetson -> Brain] (id, x, y)
+        CallbackItem("get_disk_obj", manager.get_disk_obj_callback), # [Brain -> Jetson] (id)
+        CallbackItem("set_goal_obj", manager.set_goal_obj_callback),  # [Jetson -> Brain] (id, x, y)
+        CallbackItem("get_goal_obj", manager.get_goal_obj_callback), # [Brain -> Jetson] (id)
+        CallbackItem("set_roller_obj", manager.set_roller_obj_callback), # [Jetson -> Brain] (id, x, y, color, in_contact)
+        CallbackItem("get_roller_obj", manager.get_roller_obj_callback), # [Brain -> Jetson] (id)
+        # Global F.O.R. Related Callbacks
+        CallbackItem("get_pos", manager.get_pos_callback), # [Jetson -> Brain] (None)
+        CallbackItem("set_pos", manager.set_pos_callback), # [Brain -> Jetson] (x, y, Theta)
+        #Task Related Callbacks
+    ]
+
 class Communications:
-    def __init__( self ):
+    def __init__( self, manager ):
         self.__callbacks = dict.fromkeys(range(0, 256))
         self.__stop_token = False
         self.__next_packet = [ 1 ]
@@ -80,7 +105,40 @@ class Communications:
         self.__FindPort()
         self.last_date = datetime.now()
         self.__callbacks[0] = CallbackItem("", self.RecieveTagList)
+    
+    def serialize_string(self, s: str) -> str:
+        stream = chr(2)
+        string_length = struct.pack('>H', len(s) + 10)
+        stream += chr(string_length[0]) + chr(string_length[1])
+        stream += s
+        return stream
+        
+    def serialize_number(self, f: float) -> str:
+        stream = ""
+        ff = ""
 
+        if f == int(f):
+            ff = str(int(f))
+        else:
+            ff = str(f)
+
+        for c in range(len(ff)):
+            chr_ = ord(ff[c])
+
+            if 48 <= chr_ <= 57:
+                if c + 1 < len(ff) and 48 <= ord(ff[c+1]) <= 57:
+                    nchar = ((chr_ - 48) * 10) + (ord(ff[c+1]) - 37)
+                    stream += chr(nchar)
+                    c += 1
+                else:
+                    stream += chr(chr_ - 37)
+            elif chr_ == 46:
+                stream += chr(7)
+
+        ret = chr(len(stream) + 10) + stream
+        ret = chr(1) + ret
+        return ret
+    
     def __FindPort( self ):
         ports = serial.tools.list_ports.comports()
         for port, desc, hwid in sorted(ports):
@@ -151,3 +209,6 @@ class Communications:
 
     def Start( self ):
         self.read_loop = asyncio.create_task (self.__ReadInput())
+        
+    def Init( self ):
+        pass

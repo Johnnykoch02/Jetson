@@ -1,16 +1,10 @@
-from Serial.VexCommunications import *
-from Managers.GameObjects import *
-from Managers.GameAnalysis import *
-from Managers.VisionManager import *
-from Managers.GameSteps import *
-from Managers.GameTasks import *
 import pyqtgraph as pg
-from PyQt5 import QtWidgets, QtCore
 import cProfile
 import pstats
 import sys
+from PyQt5 import QtWidgets, QtCore
 import threading
-
+import time
 DEBUG_VISUALIZE = True
 from Testing.Visualize import *
 
@@ -18,17 +12,14 @@ def visualization():
     global objects
     visualize_game_objects(objects.GetAll())
 
-def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
+def GameLogic(camera, tasks, analyzer):
     t = time.time()
     # Beat the game
     while True:
-
         for object in camera.CollectObjects():
             objects.TraceObject(object)
-
         nt = time.time()
         dt = nt - t
-
         if DEBUG_VISUALIZE:
 
             for bot in objects.GetBots():
@@ -61,44 +52,23 @@ def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
         #ps = pstats.Stats(pr).sort_stats('cumtime')
         #ps.print_stats()
         #break
+        non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
+
+        # Start the non-GUI task in a separate thread
+        non_gui_thread.start()
+
+        
 
 
-def Main() -> 0:
+def Main():
     global objects
-    # Load serial Communications
-    # comms = Communications()
-    # comms.Start()
-
-    # Init Game Object manager
-    objects = ObjectManager()
-
-    # Init Game Analysis manager
-    analyzer = Analyzer()
-
-    # Init Game Step Builder
-    builder = StepBuilder()
-
-    # Init Task manager
-    tasks = TaskManager()
-
-    # Init Vision manager with reporting to Game Analysis
-    # True for fake data
-    camera = Vision(DEBUG_VISUALIZE)
-
-    non_gui_thread = threading.Thread(target=GameLogic, args=(camera, tasks, analyzer))
-
-    # Start the non-GUI task in a separate thread
-    non_gui_thread.start()
-
     if DEBUG_VISUALIZE:
-        app = QtWidgets.QApplication([])
-        visualize_game_objects(None)
-        timer = QtCore.QTimer()
-        timer.timeout.connect(visualization)
-        timer.start(50)
-        app.exec_()
-
-    return 0
+            app = QtWidgets.QApplication([])
+            visualize_game_objects(None)
+            timer = QtCore.QTimer()
+            timer.timeout.connect(visualization)
+            timer.start(50)
+            app.exec_()
 
 if __name__ == '__main__':
     sys.exit(Main())

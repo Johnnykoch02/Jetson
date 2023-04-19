@@ -42,3 +42,4 @@ class ObjectManager:
         return (self.enemies | self.friendly).values()
     def GetAll( self ) -> list[GameObject]:
         return (self.enemies | self.friendly | self.frisbees).values()
+
