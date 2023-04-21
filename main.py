@@ -62,13 +62,36 @@ def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
         #ps.print_stats()
         #break
 
+fcounter = 1
+def test_function( params ):
+    global fcounter
+    print(f"Recieved: {fcounter}")
+    #for param in range(len(params)):
+    #    print(params[param])
+    fcounter += 1
 
 def Main() -> 0:
-    global objects
+    # global objects
     # Load serial Communications
     comms = Communications()
+    comms.RegisterCallback("test_function", test_function)
     comms.Start()
     comms.WaitForTags()
+
+    sent = 1
+    ctime = time.time()
+    deltatime = 0
+    ltime = ctime
+    while(True):
+        deltatime += (time.time() - ltime) * 1000
+        ltime = time.time()
+        #print(deltatime)
+        if deltatime > 10:
+            deltatime = 0
+            b = comms.SendPacket("TestFunction", 145, 541, "this is a long test string for testing sending string from the jetson to the v5 brain")
+            print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
+            sent+=1
+        time.sleep(0.005)
 
     # Init Game Object manager
     # objects = ObjectManager()
