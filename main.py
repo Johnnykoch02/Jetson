@@ -66,8 +66,8 @@ fcounter = 1
 def test_function( params ):
     global fcounter
     print(f"Recieved: {fcounter}")
-    #for param in range(len(params)):
-    #    print(params[param])
+    for param in range(len(params)):
+        print(params[param])
     fcounter += 1
 
 def Main() -> 0:
@@ -88,7 +88,7 @@ def Main() -> 0:
         #print(deltatime)
         if deltatime > 10:
             deltatime = 0
-            b = comms.SendPacket("TestFunction", 145, 541, "this is a long test string for testing sending string from the jetson to the v5 brain")
+            b = comms.SendPacket("TestFunction", 145.48, 541.785, "this is a long test string for testing sending string from the jetson to the v5 brain")
             print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
             sent+=1
         time.sleep(0.005)
