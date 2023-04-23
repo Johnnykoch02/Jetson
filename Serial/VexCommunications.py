@@ -33,7 +33,10 @@ class FloatDeserializer:
                 if array[i] != 7:
                     decimal_length += 1
                     decimal *= 10
-                    decimal += array[i] - 11
+                    k = array[i] - 11
+                    decimal += k
+                    if k > 10 and i < length and array[i+1] - 11 > 10:
+                        decimal *= 10
                 else:
                     switch_to_decimal = not switch_to_decimal
 
@@ -217,7 +220,7 @@ class Communications:
                 self.InternalSendPacket(1, step, i, item.friendly_name)
                 if step == 0:
                     break
-        self.__callbacks = self.__extendedTags
+
         self.__extendedTags = [None] * 256
 
     def RecieveTagList( self, array: list ):
@@ -225,6 +228,9 @@ class Communications:
         tag_id = array[1]
         friendly_name = array[2]
         self.__extendedTags[tag_id] = CallbackItem(friendly_name, None)
+
+        found = [k for k in self.__callbacks if k is not None and k.friendly_name == friendly_name]
+        if found: self.__extendedTags[tag_id].callback = found[0].callback
         
         print("Recieved: " + friendly_name)
 
