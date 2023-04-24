@@ -59,7 +59,7 @@ class Hasher:
     def GetTimeHash( self, weight_type: ObjectType, deltatime: float ) -> float:
         return self.GetGenericHash(weight_type, "time_weights", deltatime ) / 100
     
-    def GetDistanceHash( self, gameObject: GameObject, robots: list[GameObject], radius: float = 100):
+    def GetDistanceHash( self, gameObject: GameObject, robots: list, radius: float = 100):
         score = 1
 
         for robot in robots:
@@ -144,7 +144,7 @@ class Hasher:
 
         return distance_score * time_weight * local_distance
     
-    def HashRoller(self, gameObject: GameObject, deltaTime: float, extra: list[GameObject]) -> float:       
+    def HashRoller(self, gameObject: GameObject, deltaTime: float, extra: list) -> float:       
         # Get the time weight for the roller
         time_weight = self.GetTimeHash(ObjectType.ROLLER, deltaTime)
         
@@ -158,7 +158,7 @@ class Hasher:
         roller_score = time_weight * distance_hash
         return roller_score
 
-    def HashGameObject( self, object: GameObject, deltatime: float, extra: list[GameObject] ) -> float:
+    def HashGameObject( self, object: GameObject, deltatime: float, extra: list ) -> float:
         if object.type == ObjectType.FRISBEE:
             return self.HashFrisbee( object, deltatime, extra )
         if object.type == ObjectType.ROLLER:

@@ -34,17 +34,17 @@ class ObjectManager:
         return self.target
     def SerializeForComs( self ) -> bytearray:
         pass
-    def GetEnemies( self ) -> list[GameObject]:
+    def GetEnemies( self ) -> list:
         return self.enemies.values()
-    def GetFriendly( self ) -> list[GameObject]:
+    def GetFriendly( self ) -> list:
         return self.friendly.values()
-    def GetFrisbees( self ) -> list[GameObject]:
+    def GetFrisbees( self ) -> list:
         return self.frisbees.values()
     def GetGoals( self ) -> dict[int, GameObject]:
         pass
-    def GetBots( self ) -> list[GameObject]:
+    def GetBots( self ) -> list:
         return (self.enemies | self.friendly).values()
-    def GetRollers( self ) -> list[GameObject]:
+    def GetRollers( self ) -> list:
         return self.rollers.values()
-    def GetAll( self ) -> list[GameObject]:
+    def GetAll( self ) -> list:
         return (self.enemies | self.friendly | self.frisbees | self.rollers).values()

@@ -47,7 +47,7 @@ class Vision:
         self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else 1, 3, *(DEFAULT_SIZE, DEFAULT_SIZE)))
         self.camera.Start()
 
-    def CollectObjects( self ) -> list[GameObject]:
+    def CollectObjects( self ) -> list:
 
         dt = time.time()
         frame = self.camera.GetFrame()

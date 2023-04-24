@@ -1,8 +1,8 @@
 from Classes.GameObject import *
 import random
 
-def GenerateFakeData() -> list[GameObject]:
-    fake_data = list[GameObject]()
+def GenerateFakeData() -> list:
+    fake_data = list()
 
     num_of_frisbee = 100
 
