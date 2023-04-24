@@ -42,7 +42,8 @@ class Vision:
         self.model = DetectMultiBackend(weights, device=self.device, dnn=False, data=ROOT / 'data/coco128.yaml', fp16=False)
         self.model.eval()
 
-        cv.namedWindow("Labels")
+        if platform.system() == "Windows":
+            cv.namedWindow("Labels")
     
     def Start(self):
         self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else 1, 3, *(DEFAULT_SIZE, DEFAULT_SIZE)))
@@ -62,11 +63,14 @@ class Vision:
 
         output_frame = cv2.cvtColor(output_frame, cv2.COLOR_RGB2BGR)
 
-        # Display the frame with detections
-        cv.imshow("Labels", output_frame)
+        if platform.system() == "Windows":
+            # Display the frame with detections
+            cv.imshow("Labels", output_frame)
 
-        cv.waitKey(1)
-        # return self.fake_data
+            cv.waitKey(1)
+            # return self.fake_data
+        else:
+            print(detections)
 
 
 def preprocess_image(image, img_size=DEFAULT_SIZE):
