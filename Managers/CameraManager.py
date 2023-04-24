@@ -34,10 +34,8 @@ class CameraManager:
         # while True:
         #     _, self.__frame = cam.read()
         while True:
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                    sock.connect((self.server_ip, self.server_port))
-                
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                if sock.connect_ex((self.server_ip, self.server_port)) == 0:
                     try:
                         while True:
                             frame_data = self.__receive_frame(sock, self.frame_size)
@@ -49,8 +47,6 @@ class CameraManager:
                                 self.__frame = frame
                     except KeyboardInterrupt:
                         print("Closing connection...")
-            except KeyboardInterrupt:
-                print("Exiting safely")
 
 
     def __run_coroutine(self):
