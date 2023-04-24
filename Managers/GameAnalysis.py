@@ -32,7 +32,7 @@ class Analyzer:
 
         return hash_list
     
-    def __ThreadedHashing( self, objects: list[GameObject], extra: dict) -> list:
+    def __ThreadedHashing( self, objects: list, extra: dict) -> list:
         
         def __internal(item):
             return self.__hasher.HashGameObject(item, self.__GetDeltaTime(), extra)

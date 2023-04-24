@@ -4,63 +4,63 @@ from Managers.GameAnalysis import *
 from Managers.VisionManager import *
 from Managers.GameSteps import *
 from Managers.GameTasks import *
-import pyqtgraph as pg
-from PyQt5 import QtWidgets, QtCore
+# import pyqtgraph as pg
+# from PyQt5 import QtWidgets, QtCore
 import cProfile
 import pstats
 import sys
 import threading
 
 DEBUG_VISUALIZE = True
-from Testing.Visualize import *
+# from Testing.Visualize import *
 
-def visualization():
-    global objects
-    visualize_game_objects(objects.GetAll())
+# def visualization():
+#     global objects
+#     visualize_game_objects(objects.GetAll())
 
-def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
-    t = time.time()
-    # Beat the game
-    while True:
+# def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
+#     t = time.time()
+#     # Beat the game
+#     while True:
 
-        for object in camera.CollectObjects():
-            objects.TraceObject(object)
+#         for object in camera.CollectObjects():
+#             objects.TraceObject(object)
 
-        nt = time.time()
-        dt = nt - t
+#         nt = time.time()
+#         dt = nt - t
 
-        if DEBUG_VISUALIZE:
+#         if DEBUG_VISUALIZE:
 
-            for bot in objects.GetBots():
-                update_robot_position_and_velocity(bot, dt)
+#             for bot in objects.GetBots():
+#                 update_robot_position_and_velocity(bot, dt)
 
-        # buf = objects.SerializeForComs()
-        # comms.SendRawBuffer(buf)
+#         # buf = objects.SerializeForComs()
+#         # comms.SendRawBuffer(buf)
 
-        # analyzer.WaitForCompletion()
+#         # analyzer.WaitForCompletion()
 
-        # Task -> Actions -> Steps -> Directions
-        # Reactive Program -> Reacts and responds its changing environment
+#         # Task -> Actions -> Steps -> Directions
+#         # Reactive Program -> Reacts and responds its changing environment
 
-        if tasks.AlmostFinished():
-            decision = analyzer.FindBest(objects)
+#         if tasks.AlmostFinished():
+#             decision = analyzer.FindBest(objects)
 
-            # if objects.GetCurrentTarget() != decision.GetTarget():
-            #     objects.SetCurrentTarget(decision.GetTarget())
-            #     steps = builder.BuildSteps(decision)
-            #     tasks.QueueTask(steps)
-        else:
-            pass
-            # task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
-            # if task.NeedsCorrection():
-            #     tasks.Interupt()
-            #     tasks.QueueTask(task.GetSteps())
-        t = nt
+#             # if objects.GetCurrentTarget() != decision.GetTarget():
+#             #     objects.SetCurrentTarget(decision.GetTarget())
+#             #     steps = builder.BuildSteps(decision)
+#             #     tasks.QueueTask(steps)
+#         else:
+#             pass
+#             # task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
+#             # if task.NeedsCorrection():
+#             #     tasks.Interupt()
+#             #     tasks.QueueTask(task.GetSteps())
+#         t = nt
 
-        #pr.disable()
-        #ps = pstats.Stats(pr).sort_stats('cumtime')
-        #ps.print_stats()
-        #break
+#         #pr.disable()
+#         #ps = pstats.Stats(pr).sort_stats('cumtime')
+#         #ps.print_stats()
+#         #break
 
 fcounter = 1
 def test_function( params ):
@@ -73,25 +73,29 @@ def test_function( params ):
 def Main() -> 0:
     # global objects
     # Load serial Communications
-    comms = Communications()
-    comms.RegisterCallback("test_function", test_function)
-    comms.Start()
-    comms.WaitForTags()
+    # comms = Communications()
+    # comms.RegisterCallback("test_function", test_function)
+    # comms.Start()
+    # comms.WaitForTags()
+    camera = Vision(False)
+    camera.Start()
+    while True:
+        camera.CollectObjects()
 
-    sent = 1
-    ctime = time.time()
-    deltatime = 0
-    ltime = ctime
-    while(True):
-        deltatime += (time.time() - ltime) * 1000
-        ltime = time.time()
-        #print(deltatime)
-        if deltatime > 10:
-            deltatime = 0
-            b = comms.SendPacket("TestFunction", 145.48, 541.785, "this is a long test string for testing sending string from the jetson to the v5 brain")
-            print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
-            sent+=1
-        time.sleep(0.005)
+    # sent = 1
+    # ctime = time.time()
+    # deltatime = 0
+    # ltime = ctime
+    # while(True):
+    #     deltatime += (time.time() - ltime) * 1000
+    #     ltime = time.time()
+    #     #print(deltatime)
+    #     if deltatime > 10:
+    #         deltatime = 0
+    #         b = comms.SendPacket("TestFunction", 145.48, 541.785, "this is a long test string for testing sending string from the jetson to the v5 brain")
+    #         print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
+    #         sent+=1
+    #     time.sleep(0.005)
 
     # Init Game Object manager
     # objects = ObjectManager()
