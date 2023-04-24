@@ -12,55 +12,55 @@ import sys
 import threading
 
 DEBUG_VISUALIZE = True
-from Testing.Visualize import *
+# from Testing.Visualize import *
 
-def visualization():
-    global objects
-    visualize_game_objects(objects.GetAll())
+# def visualization():
+#     global objects
+#     visualize_game_objects(objects.GetAll())
 
-def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
-    t = time.time()
-    # Beat the game
-    while True:
+# def GameLogic(camera: Vision, tasks: TaskManager, analyzer: Analyzer):
+#     t = time.time()
+#     # Beat the game
+#     while True:
 
-        for object in camera.CollectObjects():
-            objects.TraceObject(object)
+#         for object in camera.CollectObjects():
+#             objects.TraceObject(object)
 
-        nt = time.time()
-        dt = nt - t
+#         nt = time.time()
+#         dt = nt - t
 
-        if DEBUG_VISUALIZE:
+#         if DEBUG_VISUALIZE:
 
-            for bot in objects.GetBots():
-                update_robot_position_and_velocity(bot, dt)
+#             for bot in objects.GetBots():
+#                 update_robot_position_and_velocity(bot, dt)
 
-        # buf = objects.SerializeForComs()
-        # comms.SendRawBuffer(buf)
+#         # buf = objects.SerializeForComs()
+#         # comms.SendRawBuffer(buf)
 
-        # analyzer.WaitForCompletion()
+#         # analyzer.WaitForCompletion()
 
-        # Task -> Actions -> Steps -> Directions
-        # Reactive Program -> Reacts and responds its changing environment
+#         # Task -> Actions -> Steps -> Directions
+#         # Reactive Program -> Reacts and responds its changing environment
 
-        if tasks.AlmostFinished():
-            decision = analyzer.FindBest(objects)
+#         if tasks.AlmostFinished():
+#             decision = analyzer.FindBest(objects)
 
-            # if objects.GetCurrentTarget() != decision.GetTarget():
-            #     objects.SetCurrentTarget(decision.GetTarget())
-            #     steps = builder.BuildSteps(decision)
-            #     tasks.QueueTask(steps)
-        else:
-            pass
-            # task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
-            # if task.NeedsCorrection():
-            #     tasks.Interupt()
-            #     tasks.QueueTask(task.GetSteps())
-        t = nt
+#             # if objects.GetCurrentTarget() != decision.GetTarget():
+#             #     objects.SetCurrentTarget(decision.GetTarget())
+#             #     steps = builder.BuildSteps(decision)
+#             #     tasks.QueueTask(steps)
+#         else:
+#             pass
+#             # task = analyzer.TrackCompletion(objects, tasks.GetCurrentTask())
+#             # if task.NeedsCorrection():
+#             #     tasks.Interupt()
+#             #     tasks.QueueTask(task.GetSteps())
+#         t = nt
 
-        #pr.disable()
-        #ps = pstats.Stats(pr).sort_stats('cumtime')
-        #ps.print_stats()
-        #break
+#         #pr.disable()
+#         #ps = pstats.Stats(pr).sort_stats('cumtime')
+#         #ps.print_stats()
+#         #break
 
 fcounter = 1
 def test_function( params ):
