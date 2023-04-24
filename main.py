@@ -4,8 +4,8 @@ from Managers.GameAnalysis import *
 from Managers.VisionManager import *
 from Managers.GameSteps import *
 from Managers.GameTasks import *
-import pyqtgraph as pg
-from PyQt5 import QtWidgets, QtCore
+# import pyqtgraph as pg
+# from PyQt5 import QtWidgets, QtCore
 import cProfile
 import pstats
 import sys
@@ -73,14 +73,14 @@ def test_function( params ):
 def Main() -> 0:
     # global objects
     # Load serial Communications
-    comms = Communications()
-    comms.RegisterCallback("test_function", test_function)
-    comms.Start()
-    comms.WaitForTags()
-    # camera = Vision(False)
-    # camera.Start()
-    # while True:
-    #     camera.CollectObjects()
+    # comms = Communications()
+    # comms.RegisterCallback("test_function", test_function)
+    # comms.Start()
+    # comms.WaitForTags()
+    camera = Vision(False)
+    camera.Start()
+    while True:
+        camera.CollectObjects()
 
     # sent = 1
     # ctime = time.time()
