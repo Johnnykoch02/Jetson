@@ -70,8 +70,15 @@ class Vision:
             cv.waitKey(1)
             # return self.fake_data
         else:
-            print(detections)
+            for result in detections:
+                bbox, conf, cls = result
+                x1, y1, x2, y2 = [coord.item() for coord in bbox]
+                cls = int(cls.item())
+                conf = conf.item()
 
+                print(f"Bounding box: ({x1}, {y1}), ({x2}, {y2})")
+                print(f"Class index: {cls}")
+                print(f"Confidence score: {conf}")
 
 def preprocess_image(image, img_size=DEFAULT_SIZE):
     return torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0).float().div(255.0)
