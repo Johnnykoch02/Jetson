@@ -14,6 +14,7 @@ from utils.plots import Annotator, colors, save_one_box
 
 import os
 import sys
+import platform
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -36,7 +37,7 @@ class Vision:
         #     self.fake_data = None
         self.camera = CameraManager()
         # Load the model
-        weights = "E:/Jetson/best.pt"
+        weights = "E:/Jetson/best.pt" if platform.system() == "Windows" else "/home/robot/Jetson/best.pt"
         self.device = select_device('cpu')  # use 'cpu' if GPU is not available
         self.model = DetectMultiBackend(weights, device=self.device, dnn=False, data=ROOT / 'data/coco128.yaml', fp16=False)
         self.model.eval()
