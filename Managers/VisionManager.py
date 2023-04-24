@@ -38,7 +38,7 @@ class Vision:
         self.camera = CameraManager()
         # Load the model
         weights = "E:/Jetson/best.pt" if platform.system() == "Windows" else "/home/robot/Jetson/best.pt"
-        self.device = select_device('cpu')  # use 'cpu' if GPU is not available
+        self.device = select_device('cpu') if platform.system() == "Windows" else select_device() # use 'cpu' if GPU is not available
         self.model = DetectMultiBackend(weights, device=self.device, dnn=False, data=ROOT / 'data/coco128.yaml', fp16=False)
         self.model.eval()
 
