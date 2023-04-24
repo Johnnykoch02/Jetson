@@ -33,20 +33,25 @@ class CameraManager:
         # cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         # while True:
         #     _, self.__frame = cam.read()
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect((self.server_ip, self.server_port))
-        
+        while True:
             try:
-                while True:
-                    frame_data = self.__receive_frame(sock, self.frame_size)
-                    frame = np.frombuffer(frame_data, dtype=np.uint8).reshape((self.frame_width,self.frame_height, 4))
-                    frame = Image.frombytes('RGBA', (self.frame_width,self.frame_height), frame).convert('RGB')
-                    frame = np.array(frame)
-                    # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-                    with self.__lock:
-                        self.__frame = frame
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                    sock.connect((self.server_ip, self.server_port))
+                
+                    try:
+                        while True:
+                            frame_data = self.__receive_frame(sock, self.frame_size)
+                            frame = np.frombuffer(frame_data, dtype=np.uint8).reshape((self.frame_width,self.frame_height, 4))
+                            frame = Image.frombytes('RGBA', (self.frame_width,self.frame_height), frame).convert('RGB')
+                            frame = np.array(frame)
+                            # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+                            with self.__lock:
+                                self.__frame = frame
+                    except KeyboardInterrupt:
+                        print("Closing connection...")
             except KeyboardInterrupt:
-                print("Closing connection...")
+                print("Exiting safely")
+
 
     def __run_coroutine(self):
         asyncio.set_event_loop(self.__managed_thread)
