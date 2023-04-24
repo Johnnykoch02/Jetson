@@ -210,13 +210,12 @@ class Communications:
             time.sleep(0.1)
 
     def __SendTags( self ):
-        for i in range(len(self.__extendedTags)):
+        for i in range(0, len(self.__extendedTags)):
             item = self.__extendedTags[i]
             if item is not None:
                 step = 1
-                if (self.__extendedTags[i+1] is None):
-                    step = 0
-                print("Sending Tag Update:", step, item.friendly_name)
+                if (self.__extendedTags[i+1] is None): step = 0
+                print("Sending Tag Update:", i, item.friendly_name)
                 self.InternalSendPacket(1, step, i, item.friendly_name)
                 if step == 0:
                     break
@@ -286,8 +285,8 @@ class Communications:
         else:
             item = self.__callbacks[function_id - self.__packetIndexOffset]
         
-        # print(function_id - self.__packetIndexOffset)
-        # print(self.__callbacks)
+        print(function_id - self.__packetIndexOffset)
+        print([i.friendly_name for i in self.__callbacks if i is not None])
         
         # print("================================")
         # print("Function Called: \"{}\"".format(item.friendly_name))   
