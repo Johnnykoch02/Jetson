@@ -31,12 +31,15 @@ class FloatDeserializer:
                     switch_to_decimal = not switch_to_decimal
             else:
                 if array[i] != 7:
-                    decimal_length += 1
-                    decimal *= 10
-                    decimal += array[i] - 11
+                    k = array[i] - 11
+                    p = len(str(k))
+                    decimal *= pow(10, p)
+                    decimal += k
+                    decimal_length += p
                 else:
                     switch_to_decimal = not switch_to_decimal
 
+        print("decimal:", decimal)
         divisor = pow(10, decimal_length)
         number += decimal / divisor
 
@@ -217,6 +220,7 @@ class Communications:
                 self.InternalSendPacket(1, step, i, item.friendly_name)
                 if step == 0:
                     break
+
         self.__callbacks = self.__extendedTags
         self.__extendedTags = [None] * 256
 
@@ -225,6 +229,11 @@ class Communications:
         tag_id = array[1]
         friendly_name = array[2]
         self.__extendedTags[tag_id] = CallbackItem(friendly_name, None)
+
+        found = [k for k in self.__callbacks if k is not None and k.friendly_name == friendly_name]
+        if len(found) > 0:
+            self.__extendedTags[tag_id].callback = found[0].callback
+            print(found[0].callback)
         
         print("Recieved: " + friendly_name)
 
@@ -277,10 +286,12 @@ class Communications:
         else:
             item = self.__callbacks[function_id - self.__packetIndexOffset]
         
+        # print(function_id - self.__packetIndexOffset)
+        # print(self.__callbacks)
         
-        #print("================================")
-        #print("Function Called: \"{}\"".format(item.friendly_name))   
-        #print("Total Bytes: {}".format(len(packet)))
+        # print("================================")
+        # print("Function Called: \"{}\"".format(item.friendly_name))   
+        # print("Total Bytes: {}".format(len(packet)))
         
         packet = packet[self.header_length:-self.footer_length]
         pindex = 1
