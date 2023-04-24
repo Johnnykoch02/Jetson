@@ -40,7 +40,7 @@ class ObjectManager:
         return self.friendly.values()
     def GetFrisbees( self ) -> list:
         return self.frisbees.values()
-    def GetGoals( self ) -> dict[int, GameObject]:
+    def GetGoals( self ) -> dict:
         pass
     def GetBots( self ) -> list:
         return (self.enemies | self.friendly).values()
