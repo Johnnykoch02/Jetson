@@ -80,9 +80,7 @@ class Deserializer:
             return StringDeserializer
         
 class CallbackItem:
-    friendly_name = ""
-    callback = None
-    def __init__( self, name, callback ):
+    def __init__( self, name="", callback=None ):
         self.friendly_name = name
         self.callback = callback
 
@@ -97,7 +95,7 @@ class Communications:
     __recieved_tags = False
     header_length = len(__packet_header) + 1
     footer_length = len(__end_of_transmission)
-    
+        
     def __init__( self ):
         self.__recieved_tags = True
         self.__callbacks = [None] * 256
@@ -254,7 +252,13 @@ class Communications:
         index = self.__FindCallbackItem(name)
         print("Registered:", index, name)
         self.__callbacks[index] = CallbackItem(name, method)
-
+    
+    def HasCallback( self, name: str ) -> bool:
+        for idx, _callback in self.__callbacks.items():
+            if _callback.friendly_name == name:
+                return True
+        return False
+    
     async def __ReadInput( self ):
         self.__FindPort()
         self.last_date = datetime.now()

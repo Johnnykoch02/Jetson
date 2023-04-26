@@ -1,3 +1,4 @@
+from Managers.GameObjects import *
 from Classes.GameObject import *
 
 ROBOT_SPEED = 100.0
@@ -38,9 +39,9 @@ hash_weights = {
 }
 
 class Hasher:
-    def __init__(self) -> None:
-        self.robot_velocity = Vec(1,0,0)
-        pass
+    def __init__(self, object_manager) -> None:
+        self.object_manager = object_manager
+        self.robot_velocity = object_manager.my_robot['velocity']
 
     def GetGenericHash( self, weight_type: ObjectType, weight, delta ) -> float:
         weights = hash_weights[weight_type]
