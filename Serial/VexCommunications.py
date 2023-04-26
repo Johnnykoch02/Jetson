@@ -206,7 +206,11 @@ class Communications:
 
     def WaitForTags(self):
         self.__recieved_tags = False
+        ctr = 0
         while(self.__recieved_tags == False):
+            ctr+=1
+            if ctr % 100 == 0:
+                print('Watining for tags...')
             time.sleep(0.1)
 
     def __SendTags( self ):
@@ -228,11 +232,10 @@ class Communications:
         tag_id = array[1]
         friendly_name = array[2]
         self.__extendedTags[tag_id] = CallbackItem(friendly_name, None)
-
-        found = [k for k in self.__callbacks if k is not None and k.friendly_name == friendly_name]
-        if len(found) > 0:
-            self.__extendedTags[tag_id].callback = found[0].callback
-            print(found[0].callback)
+        found_callback = [i for i in self.__callbacks if i is not None and i.friendly_name == friendly_name]
+        if found_callback:
+            self.__extendedTags[tag_id].callback = found_callback[0].callback
+            
         
         print("Recieved: " + friendly_name)
 
@@ -259,7 +262,7 @@ class Communications:
         while not self.__stop_token:
             #self.serial.write(10)
             for _int in self.serial.read():
-                #self.serial.write(10)
+                # print(_int)
                 packet_length = len(self.__next_packet)
                 #if packet_length - 1 < self.__next_packet[0]:
                 if packet_length >= self.header_length:
@@ -288,9 +291,9 @@ class Communications:
         print(function_id - self.__packetIndexOffset)
         print([i.friendly_name for i in self.__callbacks if i is not None])
         
-        # print("================================")
-        # print("Function Called: \"{}\"".format(item.friendly_name))   
-        # print("Total Bytes: {}".format(len(packet)))
+        print("================================")
+        print("Function Called: \"{}\"".format(item.friendly_name))   
+        print("Total Bytes: {}".format(len(packet)))
         
         packet = packet[self.header_length:-self.footer_length]
         pindex = 1
@@ -302,12 +305,12 @@ class Communications:
             paramaters.append(data.value)
             pindex += data.next + 1
         
-        #print("Parameters: {}".format(paramaters))
-        #diff = (datetime.now() - self.last_date)
-        # self.last_date = datetime.now()
+        print("Parameters: {}".format(paramaters))
+        diff = (datetime.now() - self.last_date)
+        self.last_date = datetime.now()
         
-        #print("Time Since Last Call: {}".format(diff.total_seconds()))
-        #print("Parse Time: {}".format(diff.total_seconds() * 1000000))
+        print("Time Since Last Call: {}".format(diff.total_seconds()))
+        print("Parse Time: {}".format(diff.total_seconds() * 1000000))
         item.callback(paramaters)
 
     def __run_coroutine(self):

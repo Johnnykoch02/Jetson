@@ -10,6 +10,7 @@ import cProfile
 import pstats
 import sys
 import threading
+import datetime
 
 DEBUG_VISUALIZE = True
 # from Testing.Visualize import *
@@ -57,24 +58,36 @@ DEBUG_VISUALIZE = True
 #             #     tasks.QueueTask(task.GetSteps())
 #         t = nt
 
-#         #pr.disable()
-#         #ps = pstats.Stats(pr).sort_stats('cumtime')
-#         #ps.print_stats()
-#         #break
-
+        #pr.disable()
+        #ps = pstats.Stats(pr).sort_stats('cumtime')
+        #ps.print_stats()
+        #break
+'''
+    Callbacks
+'''
 fcounter = 1
-def test_function( params ):
+def SerialTestJetsonToV5( params ):
     global fcounter
     print(f"Recieved: {fcounter}")
     for param in range(len(params)):
         print(params[param])
     fcounter += 1
-
+    
+def SerialTestV5ToJetson( params ):
+    global fcounter
+    print(f"Recieved: {fcounter}")
+    for param in range(len(params)):
+       print(params[param])
+    fcounter += 1
+'''
+End Callbacks
+'''
 def Main() -> 0:
     # global objects
     # Load serial Communications
     # comms = Communications()
-    # comms.RegisterCallback("test_function", test_function)
+    # comms.RegisterCallback("serial_test_v5_to_jetson", SerialTestV5ToJetson)
+    comms.RegisterCallback("serial_test_jetson_to_v5", SerialTestJetsonToV5)
     # comms.Start()
     # comms.WaitForTags()
     camera = Vision(False)
@@ -82,20 +95,20 @@ def Main() -> 0:
     while True:
         camera.CollectObjects()
 
-    # sent = 1
-    # ctime = time.time()
-    # deltatime = 0
-    # ltime = ctime
-    # while(True):
-    #     deltatime += (time.time() - ltime) * 1000
-    #     ltime = time.time()
-    #     #print(deltatime)
-    #     if deltatime > 10:
-    #         deltatime = 0
-    #         b = comms.SendPacket("TestFunction", 145.48, 541.785, "this is a long test string for testing sending string from the jetson to the v5 brain")
-    #         print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
-    #         sent+=1
-    #     time.sleep(0.005)
+    sent = 1
+    ctime = time.time()
+    deltatime = 0
+    ltime = ctime
+    while(True):
+        deltatime += (time.time() - ltime) * 1000
+        ltime = time.time()
+        #print(deltatime)
+        if deltatime > 10:
+            deltatime = 0
+            b = comms.SendPacket("TestFunction", 145.48, 541.785, "this is a long test string for testing sending string from the jetson to the v5 brain")
+            print(f"Sent: {sent}")#, int((ltime - ctime) * 10) / 10, b)
+            sent+=1
+        time.sleep(0.005)
 
     # Init Game Object manager
     # objects = ObjectManager()
