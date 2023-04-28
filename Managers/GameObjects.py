@@ -147,8 +147,8 @@ class ObjectManager:
                     print('Euc. Delta on Roller:', euclidean_distance)
                     if euclidean_distance < min_euclidian_distance:
                         id, min_euclidian_distance = i, euclidean_distance
-                if id != -1:
-                    self.rollers[id]
+                if id != -1 and min_euclidian_distance < 60: # 5 Ft.
+                    self.rollers[id].updatePos(Vec(interp_pos.x, interp_pos.y, 0))
                 
         
         self.PruneObjects()

@@ -152,11 +152,10 @@ class TaskManager(object):
                 self.API_call_Sent = False
             elif self.action.isFinished is not None and self.sequence_position in self.action.seq_indexes_finished and self.action.isFinished(self.action):
                 self.__API__Caller.SendClearTasks()
-                
             else:
                 if not self.API_call_Sent:
                     self.__API__Caller.MakeAPICall(self.__API_Calls[self.sequence_position], *self.__API_Args[self.sequence_position])
-
+                    self.API_call_Sent = True
             return True if self.sequence_position >= self.sequence_length else False
         
         def UpdateTargetObject( self, target_object:GameObject ):
